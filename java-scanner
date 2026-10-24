@@ -53,7 +53,7 @@ $processes = Get-Process -Name $targetProcess -ErrorAction SilentlyContinue
 if ($processes) {
     foreach ($p in $processes) {
         Write-Host "==================================================" -ForegroundColor DarkCyan
-        Write-Host " Scanning $($p.Id) ..." -ForegroundColor Cyan
+        Write-Host " Scanning javaw with ID $($p.Id) ..." -ForegroundColor Cyan
         Write-Host "==================================================" -ForegroundColor DarkCyan
         $found = $false
 
