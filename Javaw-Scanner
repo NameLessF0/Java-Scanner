@@ -1,51 +1,32 @@
-# Start
+# Header
 Write-Host "Java Scanner by NameLessF0" -ForegroundColor Magenta
 Write-Host "GitHub: https://github.com/NameLessF0" -ForegroundColor White
 Write-Host "Discord: https://discord.gg/k7hcQKRXQt" -ForegroundColor Blue
 Write-Host "`nRunning the script..." -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
-Write-Host " " -ForegroundColor Red
+Write-Host "--------------------------------------------------------------------------------"
 
-# List of keywords (Clients, Modules, and Capabilities)
+# Keywords
+# Combined and cleaned list of clients, modules, and capabilities
 $cheatKeywords = @(
-    # Famous Clients
     "Vape", "Rise", "Prestige", "Doomsday", "LiquidBounce", "Raven", 
     "Impact", "Wurst", "Sigma", "Aristois", "Kami Blue", "Future", 
-    "Ghost", "Meteor", "Skilled", "SalHack", "Intave",
-
-    # Combat & Movement Modules
-    "AimAssist", "KillAura", "Reach", "TriggerBot", "AutoClicker",
-    "Velocity", "AntiKnockback", "JumpReset", "SilentAura", "AxeSpam",
-    "AutoCrystal", "CrystalAura", "AutoHitCrystal", "HitSelect",
-    "AutoPot", "AutoTotem", "LegitTotem", "InventoryTotem", "AutoArmor",
-    "AutoDoubleHand", "AxeSpam", "ShieldBreaker", "CombatAssist",
-
-    # Utility & Movement Modules
-    "AnchorTweaks", "AutoAnchor", "WTab", "PearlCatch", "FakeLag",
-    "PingSpoof", "InvMove", "AntiVanish", "FastPlace", "FastBreak",
-    "Fly", "Speed", "Spider", "WebMacro", "JumpReset",
-
-    # Visual & World Modules
-    "ESP", "Xray", "Hitboxes", "AutoStun", "BrandSpoof", "SelfDestruct",
-    "Velocity", "Velocity", "FakeLag"
+    "Ghost", "Meteor", "Skilled", "SalHack", "Intave", "AimAssist", 
+    "KillAura", "Reach", "TriggerBot", "AutoClicker", "Velocity", 
+    "AntiKnockback", "JumpReset", "SilentAura", "AxeSpam", "AutoCrystal", 
+    "CrystalAura", "AutoHitCrystal", "HitSelect", "AutoPot", "AutoTotem", 
+    "LegitTotem", "InventoryTotem", "AutoArmor", "AutoDoubleHand", 
+    "ShieldBreaker", "CombatAssist", "AnchorTweaks", "AutoAnchor", "WTab", 
+    "PearlCatch", "FakeLag", "PingSpoof", "InvMove", "AntiVanish", 
+    "FastPlace", "FastBreak", "Fly", "Speed", "Spider", "WebMacro", 
+    "ESP", "Xray", "Hitboxes", "AutoStun", "BrandSpoof", "SelfDestruct"
 )
 
+# Create a single, high-performance Case-Insensitive Regex pattern
+$pattern = "(?i)" + (($cheatKeywords | ForEach-Object { [regex]::Escape($_) }) -join "|")
+
 $targetProcess = "javaw"
+
+# --- Scanning engine ---
 
 # Attempt to retrieve all running instances of the target process
 $processes = Get-Process -Name $targetProcess -ErrorAction SilentlyContinue
@@ -58,15 +39,13 @@ if ($processes) {
         $found = $false
 
         # Iterate through all loaded modules within the process
+        # Using the optimized pattern for much faster detection
         foreach ($module in $p.Modules) {
-            foreach ($keyword in $cheatKeywords) {
-# Check if the module name matches any defined cheat-related keyword
-                if ($module.ModuleName -match $keyword) {
-                    Write-Host "[!] Cheat/Suspicious module detected." -ForegroundColor Red
-                    Write-Host "    Name: $($module.ModuleName)" -ForegroundColor Magenta
-                    Write-Host "    Path: $($module.FileName)" -ForegroundColor DarkRed
-                    $found = $true
-                }
+            if ($module.ModuleName -match $pattern) {
+                Write-Host "[!] Cheat/Suspicious module detected." -ForegroundColor Red
+                Write-Host "    Name: $($module.ModuleName)" -ForegroundColor Magenta
+                Write-Host "    Path: $($module.FileName)" -ForegroundColor DarkRed
+                $found = $true
             }
         }
 
@@ -78,3 +57,5 @@ if ($processes) {
 } else {
     Write-Host "[?] Process '$targetProcess' not found. Ensure Minecraft is running." -ForegroundColor Yellow
 }
+Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkRed
+Write-Host "[*] Scan Complete." -ForegroundColor Cyan
